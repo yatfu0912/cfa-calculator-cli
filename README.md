@@ -11,6 +11,7 @@ A comprehensive, fast, and user-friendly command-line tool for CFA (Chartered Fi
 ### ✅ Complete Implementation
 
 - **Interactive Mode**: Bilingual (English/Chinese) menu-driven interface with step-by-step parameter input
+- **Mathematical Expression Support**: Use expressions like `13*3*365` or `0.05+0.02` in any numeric parameter
 - **Time Value of Money (TVM)**: Future Value, Present Value, Annuities, Perpetuities, EAR
 - **Portfolio Management**: Sharpe Ratio, Treynor Ratio, Jensen's Alpha, Beta, CAPM, Sortino Ratio
 - **Fixed Income**: Bond Price, YTM, YTC, Current Yield, Macaulay Duration, Modified Duration, Convexity
@@ -46,6 +47,11 @@ The interactive mode provides:
 # Time Value of Money
 cfa tvm fv --pv 1000 --rate 0.05 --n 10
 
+# Mathematical expressions supported!
+cfa tvm fv --pv "13*3*365" --rate 0.07 --n 1
+cfa tvm fv --pv 10000 --rate "0.05+0.02" --n 5
+cfa tvm fv --pv 100000 --rate 0.07 --n "1/12" --freq 12
+
 # Portfolio Management
 cfa portfolio sharpe --return 0.12 --rf 0.03 --std 0.15
 
@@ -60,6 +66,13 @@ cfa --help
 cfa equity --help
 cfa option --help
 ```
+
+**Mathematical Expression Support:**
+- Basic arithmetic: `+`, `-`, `*`, `/`
+- Parentheses: `()`
+- Exponentiation: `**` or `^`
+- Fractions: `1/12`
+- Examples: `"13*3*365"`, `"0.05+0.02"`, `"100*(1+0.05)"`, `"2^3"`
 
 ## Installation
 

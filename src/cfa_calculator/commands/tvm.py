@@ -17,15 +17,16 @@ from cfa_calculator.utils.validators import (
     validate_periods,
     validate_frequency,
 )
+from cfa_calculator.utils.math_parser import parse_numeric_input
 
 app = typer.Typer(help="Time Value of Money calculations")
 
 
 @app.command()
 def fv(
-    pv: float = typer.Option(..., "--pv", help="Present Value"),
-    rate: float = typer.Option(..., "--rate", "-r", help="Annual interest rate (as decimal, e.g., 0.05 for 5%)"),
-    n: str = typer.Option(..., "--n", "-n", help="Number of years (supports fractions like 1/12 for 1 month)"),
+    pv: str = typer.Option(..., "--pv", help="Present Value (supports expressions like 13*3*365)"),
+    rate: str = typer.Option(..., "--rate", "-r", help="Annual interest rate (as decimal, e.g., 0.05 for 5%, supports expressions)"),
+    n: str = typer.Option(..., "--n", "-n", help="Number of years (supports fractions like 1/12 or expressions like 6/12)"),
     freq: int = typer.Option(1, "--freq", "-f", help="Compounding frequency per year (1=annual, 2=semi-annual, 4=quarterly, 12=monthly)"),
     explain: bool = typer.Option(False, "--explain", help="Show formula explanation"),
 ):
@@ -34,26 +35,25 @@ def fv(
     Examples:
       cfa tvm fv --pv 1000 --rate 0.05 --n 10
       cfa tvm fv --pv 100000 --rate 0.07 --n 1/12 --freq 12
+      cfa tvm fv --pv "13*3*365" --rate 0.07 --n 1
+      cfa tvm fv --pv 10000 --rate "0.05+0.02" --n 5
     """
     try:
-        validate_positive(pv, "Present Value")
+        # Parse mathematical expressions
+        pv_value = parse_numeric_input(pv)
+        rate_value = parse_numeric_input(rate)
+        n_value = parse_numeric_input(n)
 
-        # Parse n to support fractions
-        if '/' in n:
-            parts = n.split('/')
-            n_value = float(parts[0]) / float(parts[1])
-        else:
-            n_value = float(n)
-
+        validate_positive(pv_value, "Present Value")
         validate_periods(n_value, "Number of years")
         validate_frequency(freq)
 
-        result = calculate_fv(pv, rate, n_value, freq)
+        result = calculate_fv(pv_value, rate_value, n_value, freq)
 
         inputs = {
-            "Present Value (PV)": pv,
-            "Interest Rate (r)": f"{rate * 100:.2f}%",
-            "Number of Years (n)": n_value if '/' not in n else f"{n_value:.4f} ({n})",
+            "Present Value (PV)": pv_value if pv == str(pv_value) else f"{pv_value:.2f} ({pv})",
+            "Interest Rate (r)": f"{rate_value * 100:.2f}%" if rate == str(rate_value) else f"{rate_value * 100:.2f}% ({rate})",
+            "Number of Years (n)": n_value if n == str(n_value) else f"{n_value:.4f} ({n})",
             "Compounding Frequency": freq,
         }
 
@@ -70,9 +70,9 @@ def fv(
 
 @app.command()
 def pv(
-    fv: float = typer.Option(..., "--fv", help="Future Value"),
-    rate: float = typer.Option(..., "--rate", "-r", help="Annual interest rate (as decimal)"),
-    n: str = typer.Option(..., "--n", "-n", help="Number of years (supports fractions like 1/12 for 1 month)"),
+    fv: str = typer.Option(..., "--fv", help="Future Value (supports expressions)"),
+    rate: str = typer.Option(..., "--rate", "-r", help="Annual interest rate (as decimal, supports expressions)"),
+    n: str = typer.Option(..., "--n", "-n", help="Number of years (supports fractions like 1/12 or expressions)"),
     freq: int = typer.Option(1, "--freq", "-f", help="Compounding frequency per year"),
     explain: bool = typer.Option(False, "--explain", help="Show formula explanation"),
 ):
@@ -81,26 +81,24 @@ def pv(
     Examples:
       cfa tvm pv --fv 15000 --rate 0.06 --n 10
       cfa tvm pv --fv 10000 --rate 0.05 --n 6/12 --freq 12
+      cfa tvm pv --fv "1000*15" --rate 0.06 --n 10
     """
     try:
-        validate_positive(fv, "Future Value")
+        # Parse mathematical expressions
+        fv_value = parse_numeric_input(fv)
+        rate_value = parse_numeric_input(rate)
+        n_value = parse_numeric_input(n)
 
-        # Parse n to support fractions
-        if '/' in n:
-            parts = n.split('/')
-            n_value = float(parts[0]) / float(parts[1])
-        else:
-            n_value = float(n)
-
+        validate_positive(fv_value, "Future Value")
         validate_periods(n_value, "Number of years")
         validate_frequency(freq)
 
-        result = calculate_pv(fv, rate, n_value, freq)
+        result = calculate_pv(fv_value, rate_value, n_value, freq)
 
         inputs = {
-            "Future Value (FV)": fv,
-            "Interest Rate (r)": f"{rate * 100:.2f}%",
-            "Number of Years (n)": n_value if '/' not in n else f"{n_value:.4f} ({n})",
+            "Future Value (FV)": fv_value if fv == str(fv_value) else f"{fv_value:.2f} ({fv})",
+            "Interest Rate (r)": f"{rate_value * 100:.2f}%" if rate == str(rate_value) else f"{rate_value * 100:.2f}% ({rate})",
+            "Number of Years (n)": n_value if n == str(n_value) else f"{n_value:.4f} ({n})",
             "Compounding Frequency": freq,
         }
 
