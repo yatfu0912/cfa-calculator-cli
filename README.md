@@ -10,6 +10,7 @@ A comprehensive, fast, and user-friendly command-line tool for CFA (Chartered Fi
 
 ### ✅ Complete Implementation
 
+- **Interactive Mode**: Bilingual (English/Chinese) menu-driven interface with step-by-step parameter input
 - **Time Value of Money (TVM)**: Future Value, Present Value, Annuities, Perpetuities, EAR
 - **Portfolio Management**: Sharpe Ratio, Treynor Ratio, Jensen's Alpha, Beta, CAPM, Sortino Ratio
 - **Fixed Income**: Bond Price, YTM, YTC, Current Yield, Macaulay Duration, Modified Duration, Convexity
@@ -20,15 +21,38 @@ A comprehensive, fast, and user-friendly command-line tool for CFA (Chartered Fi
 
 ## Quick Start
 
-```bash
-# Install
-cd "Calculator CLI"
-pip install -e .
+### Interactive Mode (Recommended for Beginners)
 
-# Run calculations
+Launch the interactive mode with bilingual prompts (English/Chinese):
+
+```bash
+cfa --interactive
+# or simply
+cfa -i
+# or just
+cfa
+```
+
+The interactive mode provides:
+- Step-by-step parameter input
+- Menu-driven interface
+- Bilingual support (English/Chinese)
+- Beautiful formatted output
+- No need to remember command syntax
+
+### Command-Line Mode (For Advanced Users)
+
+```bash
+# Time Value of Money
 cfa tvm fv --pv 1000 --rate 0.05 --n 10
+
+# Portfolio Management
 cfa portfolio sharpe --return 0.12 --rf 0.03 --std 0.15
+
+# Equity Valuation
 cfa equity ddm --dividend 5.0 --required-return 0.12 --growth 0.05
+
+# Derivatives
 cfa option black-scholes --type call --spot 100 --strike 100 --time 1.0 --rf 0.05 --vol 0.20
 
 # Get help
@@ -527,12 +551,15 @@ Calculator CLI/
 - Equity Valuation (Gordon Growth Model, Two-Stage DDM, FCFE, P/E Valuation, Justified P/E, PEG Ratio)
 - Derivatives (Black-Scholes-Merton with Greeks, Binomial Option Pricing, Put-Call Parity, Option Payoffs)
 
-### 🚧 Phase 4 (In Progress)
+### ✅ Phase 4 (Completed)
 - Interactive mode with guided prompts (bilingual: English/Chinese)
-- Save/load calculation sessions
-- Export results to CSV/JSON
+- Complete menu system for all 7 modules
+- Step-by-step parameter input
+- Beautiful formatted output with Rich library
 
 ### 📋 Phase 5 (Planned)
+- Save/load calculation sessions
+- Export results to CSV/JSON
 - Formula reference lookup
 - Multi-currency support
 - Historical data integration

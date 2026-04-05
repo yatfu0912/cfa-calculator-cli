@@ -10,20 +10,34 @@ app = typer.Typer(
 )
 
 
-@app.callback()
+@app.callback(invoke_without_command=True)
 def main(
+    ctx: typer.Context,
     version: Optional[bool] = typer.Option(
         None,
         "--version",
         "-v",
         help="Show version and exit",
         is_eager=True,
+    ),
+    interactive: Optional[bool] = typer.Option(
+        None,
+        "--interactive",
+        "-i",
+        help="Launch interactive mode",
     )
 ):
     """CFA Calculator CLI Tool."""
     if version:
         from cfa_calculator import __version__
         typer.echo(f"CFA Calculator version {__version__}")
+        raise typer.Exit()
+
+    # Launch interactive mode if no subcommand provided or --interactive flag used
+    if interactive or ctx.invoked_subcommand is None:
+        from cfa_calculator.interactive import InteractiveMode
+        mode = InteractiveMode()
+        mode.run()
         raise typer.Exit()
 
 

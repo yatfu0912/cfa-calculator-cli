@@ -26,7 +26,7 @@ class InteractiveMode:
                 self.show_main_menu()
                 choice = Prompt.ask(
                     "\n[bold cyan]選擇模塊 / Select Module[/bold cyan]",
-                    choices=["1", "2", "3", "4", "5", "6", "q"],
+                    choices=["1", "2", "3", "4", "5", "6", "7", "8", "q"],
                     default="q"
                 )
 
@@ -44,6 +44,10 @@ class InteractiveMode:
                 elif choice == "5":
                     self.other_menu()
                 elif choice == "6":
+                    self.equity_menu()
+                elif choice == "7":
+                    self.option_menu()
+                elif choice == "8":
                     self.show_help()
 
             except KeyboardInterrupt:
@@ -80,7 +84,9 @@ In this mode, you can input parameters step-by-step.
         table.add_row("3", "Bond", "債券 / Fixed Income")
         table.add_row("4", "Stats", "統計 / Statistics")
         table.add_row("5", "Other", "其他計算 / Other Calculations")
-        table.add_row("6", "Help", "幫助 / Help")
+        table.add_row("6", "Equity", "股權估值 / Equity Valuation")
+        table.add_row("7", "Option", "衍生品 / Derivatives")
+        table.add_row("8", "Help", "幫助 / Help")
         table.add_row("q", "Quit", "退出 / Exit")
 
         console.print("\n")
@@ -464,18 +470,486 @@ In this mode, you can input parameters step-by-step.
         Prompt.ask("\n按 Enter 繼續 / Press Enter to continue")
 
     def bond_menu(self):
-        """Fixed Income submenu - placeholder."""
-        console.print("\n[yellow]債券計算模塊開發中... / Bond module under development...[/yellow]")
+        """Fixed Income submenu."""
+        console.print("\n[bold cyan]═══ 債券計算 / Fixed Income ═══[/bold cyan]\n")
+
+        table = Table(show_header=True, header_style="bold magenta", box=box.ROUNDED)
+        table.add_column("選項 / Option", style="cyan", width=12)
+        table.add_column("計算 / Calculation", style="green")
+
+        table.add_row("1", "債券價格 / Bond Price")
+        table.add_row("2", "到期收益率 / Yield to Maturity (YTM)")
+        table.add_row("3", "久期 / Duration")
+        table.add_row("b", "返回 / Back")
+
+        console.print(table)
+
+        choice = Prompt.ask(
+            "\n[bold cyan]選擇計算 / Select Calculation[/bold cyan]",
+            choices=["1", "2", "3", "b"],
+            default="b"
+        )
+
+        if choice == "1":
+            self.calculate_bond_price()
+        elif choice == "2":
+            self.calculate_ytm()
+        elif choice == "3":
+            self.calculate_duration()
+
+    def calculate_bond_price(self):
+        """Calculate Bond Price interactively."""
+        from cfa_calculator.formulas.bond_formulas import calculate_bond_price
+        from cfa_calculator.utils.formatters import format_result
+
+        console.print("\n[bold green]計算債券價格 / Calculate Bond Price[/bold green]\n")
+
+        face_value = FloatPrompt.ask("面值 / Face Value", default=1000.0)
+        coupon_rate = FloatPrompt.ask("票面利率 / Coupon Rate (例如 0.06 代表 6%)")
+        ytm = FloatPrompt.ask("到期收益率 / YTM (例如 0.055 代表 5.5%)")
+        years = IntPrompt.ask("到期年數 / Years to Maturity")
+        freq = IntPrompt.ask("付息頻率 / Payment Frequency (1=年, 2=半年)", default=2)
+
+        result = calculate_bond_price(face_value, coupon_rate, ytm, years, freq)
+
+        inputs = {
+            "面值 / Face Value": f"${face_value:.2f}",
+            "票面利率 / Coupon Rate": f"{coupon_rate * 100:.2f}%",
+            "到期收益率 / YTM": f"{ytm * 100:.2f}%",
+            "到期年數 / Years": years,
+            "付息頻率 / Frequency": freq,
+        }
+
+        results = {"債券價格 / Bond Price": f"${result:.2f}"}
+
+        format_result("債券價格 / Bond Price", inputs, results)
+
+        Prompt.ask("\n按 Enter 繼續 / Press Enter to continue")
+
+    def calculate_ytm(self):
+        """Calculate YTM interactively."""
+        from cfa_calculator.formulas.bond_formulas import calculate_ytm
+        from cfa_calculator.utils.formatters import format_result
+
+        console.print("\n[bold green]計算到期收益率 / Calculate Yield to Maturity[/bold green]\n")
+
+        price = FloatPrompt.ask("債券價格 / Bond Price")
+        face_value = FloatPrompt.ask("面值 / Face Value", default=1000.0)
+        coupon_rate = FloatPrompt.ask("票面利率 / Coupon Rate (例如 0.06 代表 6%)")
+        years = IntPrompt.ask("到期年數 / Years to Maturity")
+        freq = IntPrompt.ask("付息頻率 / Payment Frequency (1=年, 2=半年)", default=2)
+
+        result = calculate_ytm(price, face_value, coupon_rate, years, freq)
+
+        inputs = {
+            "債券價格 / Bond Price": f"${price:.2f}",
+            "面值 / Face Value": f"${face_value:.2f}",
+            "票面利率 / Coupon Rate": f"{coupon_rate * 100:.2f}%",
+            "到期年數 / Years": years,
+            "付息頻率 / Frequency": freq,
+        }
+
+        results = {"到期收益率 / YTM": f"{result * 100:.4f}%"}
+
+        format_result("到期收益率 / Yield to Maturity", inputs, results)
+
+        Prompt.ask("\n按 Enter 繼續 / Press Enter to continue")
+
+    def calculate_duration(self):
+        """Calculate Duration interactively."""
+        from cfa_calculator.formulas.bond_formulas import calculate_macaulay_duration, calculate_modified_duration
+        from cfa_calculator.utils.formatters import format_result
+
+        console.print("\n[bold green]計算久期 / Calculate Duration[/bold green]\n")
+
+        face_value = FloatPrompt.ask("面值 / Face Value", default=1000.0)
+        coupon_rate = FloatPrompt.ask("票面利率 / Coupon Rate (例如 0.05 代表 5%)")
+        ytm = FloatPrompt.ask("到期收益率 / YTM (例如 0.06 代表 6%)")
+        years = IntPrompt.ask("到期年數 / Years to Maturity")
+        freq = IntPrompt.ask("付息頻率 / Payment Frequency (1=年, 2=半年)", default=2)
+
+        mac_duration = calculate_macaulay_duration(face_value, coupon_rate, ytm, years, freq)
+        mod_duration = calculate_modified_duration(face_value, coupon_rate, ytm, years, freq)
+
+        inputs = {
+            "面值 / Face Value": f"${face_value:.2f}",
+            "票面利率 / Coupon Rate": f"{coupon_rate * 100:.2f}%",
+            "到期收益率 / YTM": f"{ytm * 100:.2f}%",
+            "到期年數 / Years": years,
+            "付息頻率 / Frequency": freq,
+        }
+
+        results = {
+            "麥考利久期 / Macaulay Duration": f"{mac_duration:.4f} years",
+            "修正久期 / Modified Duration": f"{mod_duration:.4f}",
+        }
+
+        format_result("久期計算 / Duration Calculation", inputs, results)
+
         Prompt.ask("\n按 Enter 繼續 / Press Enter to continue")
 
     def stats_menu(self):
-        """Statistics submenu - placeholder."""
-        console.print("\n[yellow]統計模塊開發中... / Statistics module under development...[/yellow]")
+        """Statistics submenu."""
+        console.print("\n[bold cyan]═══ 統計計算 / Statistics ═══[/bold cyan]\n")
+
+        table = Table(show_header=True, header_style="bold magenta", box=box.ROUNDED)
+        table.add_column("選項 / Option", style="cyan", width=12)
+        table.add_column("計算 / Calculation", style="green")
+
+        table.add_row("1", "描述性統計 / Descriptive Statistics")
+        table.add_row("2", "Z分數 / Z-Score")
+        table.add_row("b", "返回 / Back")
+
+        console.print(table)
+
+        choice = Prompt.ask(
+            "\n[bold cyan]選擇計算 / Select Calculation[/bold cyan]",
+            choices=["1", "2", "b"],
+            default="b"
+        )
+
+        if choice == "1":
+            self.calculate_descriptive_stats()
+        elif choice == "2":
+            self.calculate_zscore()
+
+    def calculate_descriptive_stats(self):
+        """Calculate Descriptive Statistics interactively."""
+        from cfa_calculator.formulas.stats_formulas import calculate_mean, calculate_median, calculate_variance, calculate_std_dev
+        from cfa_calculator.utils.formatters import format_result
+
+        console.print("\n[bold green]計算描述性統計 / Calculate Descriptive Statistics[/bold green]\n")
+        console.print("[yellow]請輸入數據（用逗號分隔）[/yellow]")
+        console.print("[yellow]Please enter data (comma-separated)[/yellow]\n")
+
+        data_str = Prompt.ask("數據 / Data (例如: 10,15,12,18,20,14,16)")
+        data = [float(x.strip()) for x in data_str.split(",")]
+
+        mean = calculate_mean(data)
+        median = calculate_median(data)
+        variance = calculate_variance(data, sample=True)
+        std_dev = calculate_std_dev(data, sample=True)
+
+        inputs = {
+            "數據點數 / Data Points": len(data),
+        }
+
+        results = {
+            "平均值 / Mean": f"{mean:.4f}",
+            "中位數 / Median": f"{median:.4f}",
+            "方差 / Variance": f"{variance:.4f}",
+            "標準差 / Std Dev": f"{std_dev:.4f}",
+        }
+
+        format_result("描述性統計 / Descriptive Statistics", inputs, results)
+
+        Prompt.ask("\n按 Enter 繼續 / Press Enter to continue")
+
+    def calculate_zscore(self):
+        """Calculate Z-Score interactively."""
+        from cfa_calculator.formulas.stats_formulas import calculate_z_score
+        from cfa_calculator.utils.formatters import format_result
+
+        console.print("\n[bold green]計算 Z 分數 / Calculate Z-Score[/bold green]\n")
+
+        value = FloatPrompt.ask("觀測值 / Observed Value")
+        mean = FloatPrompt.ask("平均值 / Mean")
+        std_dev = FloatPrompt.ask("標準差 / Standard Deviation")
+
+        result = calculate_z_score(value, mean, std_dev)
+
+        inputs = {
+            "觀測值 / Value": f"{value:.2f}",
+            "平均值 / Mean": f"{mean:.2f}",
+            "標準差 / Std Dev": f"{std_dev:.2f}",
+        }
+
+        results = {"Z 分數 / Z-Score": f"{result:.4f}"}
+
+        format_result("Z 分數 / Z-Score", inputs, results, "z = (x - μ) / σ")
+
         Prompt.ask("\n按 Enter 繼續 / Press Enter to continue")
 
     def other_menu(self):
-        """Other calculations submenu - placeholder."""
-        console.print("\n[yellow]其他計算模塊開發中... / Other calculations module under development...[/yellow]")
+        """Other calculations submenu."""
+        console.print("\n[bold cyan]═══ 其他計算 / Other Calculations ═══[/bold cyan]\n")
+
+        table = Table(show_header=True, header_style="bold magenta", box=box.ROUNDED)
+        table.add_column("選項 / Option", style="cyan", width=12)
+        table.add_column("計算 / Calculation", style="green")
+
+        table.add_row("1", "淨現值 / Net Present Value (NPV)")
+        table.add_row("2", "內部收益率 / Internal Rate of Return (IRR)")
+        table.add_row("b", "返回 / Back")
+
+        console.print(table)
+
+        choice = Prompt.ask(
+            "\n[bold cyan]選擇計算 / Select Calculation[/bold cyan]",
+            choices=["1", "2", "b"],
+            default="b"
+        )
+
+        if choice == "1":
+            self.calculate_npv()
+        elif choice == "2":
+            self.calculate_irr()
+
+    def calculate_npv(self):
+        """Calculate NPV interactively."""
+        from cfa_calculator.formulas.other_formulas import calculate_npv
+        from cfa_calculator.utils.formatters import format_result
+
+        console.print("\n[bold green]計算淨現值 / Calculate Net Present Value[/bold green]\n")
+        console.print("[yellow]請輸入現金流（用逗號分隔，第一個為初始投資）[/yellow]")
+        console.print("[yellow]Please enter cash flows (comma-separated, first is initial investment)[/yellow]\n")
+
+        rate = FloatPrompt.ask("折現率 / Discount Rate (例如 0.10 代表 10%)")
+        cash_flows_str = Prompt.ask("現金流 / Cash Flows (例如: -1000,300,400,500,600)")
+        cash_flows = [float(x.strip()) for x in cash_flows_str.split(",")]
+
+        result = calculate_npv(rate, cash_flows)
+
+        inputs = {
+            "折現率 / Discount Rate": f"{rate * 100:.2f}%",
+            "現金流數量 / Cash Flows": len(cash_flows),
+            "初始投資 / Initial Investment": f"${cash_flows[0]:.2f}",
+        }
+
+        results = {"淨現值 / NPV": f"${result:.2f}"}
+
+        notes = "NPV > 0: 接受項目 / Accept project\nNPV < 0: 拒絕項目 / Reject project"
+
+        format_result("淨現值 / Net Present Value", inputs, results, "NPV = Σ[CFt / (1 + r)^t]", notes)
+
+        Prompt.ask("\n按 Enter 繼續 / Press Enter to continue")
+
+    def calculate_irr(self):
+        """Calculate IRR interactively."""
+        from cfa_calculator.formulas.other_formulas import calculate_irr
+        from cfa_calculator.utils.formatters import format_result
+
+        console.print("\n[bold green]計算內部收益率 / Calculate Internal Rate of Return[/bold green]\n")
+        console.print("[yellow]請輸入現金流（用逗號分隔，第一個為初始投資）[/yellow]")
+        console.print("[yellow]Please enter cash flows (comma-separated, first is initial investment)[/yellow]\n")
+
+        cash_flows_str = Prompt.ask("現金流 / Cash Flows (例如: -1000,400,400,400)")
+        cash_flows = [float(x.strip()) for x in cash_flows_str.split(",")]
+
+        result = calculate_irr(cash_flows)
+
+        inputs = {
+            "現金流數量 / Cash Flows": len(cash_flows),
+            "初始投資 / Initial Investment": f"${cash_flows[0]:.2f}",
+        }
+
+        results = {"內部收益率 / IRR": f"{result * 100:.4f}%"}
+
+        notes = "IRR > 要求回報: 接受項目 / Accept if IRR > required return\nIRR < 要求回報: 拒絕項目 / Reject if IRR < required return"
+
+        format_result("內部收益率 / Internal Rate of Return", inputs, results, "IRR 是使 NPV = 0 的折現率 / IRR is the rate where NPV = 0", notes)
+
+        Prompt.ask("\n按 Enter 繼續 / Press Enter to continue")
+
+    def equity_menu(self):
+        """Equity Valuation submenu."""
+        console.print("\n[bold cyan]═══ 股權估值 / Equity Valuation ═══[/bold cyan]\n")
+
+        table = Table(show_header=True, header_style="bold magenta", box=box.ROUNDED)
+        table.add_column("選項 / Option", style="cyan", width=12)
+        table.add_column("計算 / Calculation", style="green")
+
+        table.add_row("1", "戈登增長模型 / Gordon Growth Model (DDM)")
+        table.add_row("2", "P/E 估值 / P/E Valuation")
+        table.add_row("3", "PEG 比率 / PEG Ratio")
+        table.add_row("b", "返回 / Back")
+
+        console.print(table)
+
+        choice = Prompt.ask(
+            "\n[bold cyan]選擇計算 / Select Calculation[/bold cyan]",
+            choices=["1", "2", "3", "b"],
+            default="b"
+        )
+
+        if choice == "1":
+            self.calculate_ddm()
+        elif choice == "2":
+            self.calculate_pe_valuation()
+        elif choice == "3":
+            self.calculate_peg()
+
+    def calculate_ddm(self):
+        """Calculate Gordon Growth Model interactively."""
+        from cfa_calculator.formulas.equity_formulas import calculate_gordon_growth_model
+        from cfa_calculator.utils.formatters import format_result
+
+        console.print("\n[bold green]計算戈登增長模型 / Calculate Gordon Growth Model[/bold green]\n")
+
+        dividend = FloatPrompt.ask("預期股息 / Expected Dividend (D1)")
+        required_return = FloatPrompt.ask("要求回報率 / Required Return (例如 0.12 代表 12%)")
+        growth_rate = FloatPrompt.ask("增長率 / Growth Rate (例如 0.05 代表 5%)")
+
+        result = calculate_gordon_growth_model(dividend, required_return, growth_rate)
+
+        inputs = {
+            "預期股息 / Expected Dividend (D1)": f"${dividend:.2f}",
+            "要求回報率 / Required Return": f"{required_return * 100:.2f}%",
+            "增長率 / Growth Rate": f"{growth_rate * 100:.2f}%",
+        }
+
+        results = {"股票價值 / Stock Value": f"${result:.2f}"}
+
+        format_result("戈登增長模型 / Gordon Growth Model", inputs, results, "V0 = D1 / (r - g)")
+
+        Prompt.ask("\n按 Enter 繼續 / Press Enter to continue")
+
+    def calculate_pe_valuation(self):
+        """Calculate P/E Valuation interactively."""
+        from cfa_calculator.formulas.equity_formulas import calculate_pe_valuation
+        from cfa_calculator.utils.formatters import format_result
+
+        console.print("\n[bold green]計算 P/E 估值 / Calculate P/E Valuation[/bold green]\n")
+
+        eps = FloatPrompt.ask("每股收益 / Earnings Per Share (EPS)")
+        benchmark_pe = FloatPrompt.ask("基準 P/E 比率 / Benchmark P/E Ratio")
+
+        result = calculate_pe_valuation(eps, benchmark_pe)
+
+        inputs = {
+            "每股收益 / EPS": f"${eps:.2f}",
+            "基準 P/E / Benchmark P/E": f"{benchmark_pe:.2f}",
+        }
+
+        results = {"股票價值 / Stock Value": f"${result:.2f}"}
+
+        format_result("P/E 估值 / P/E Valuation", inputs, results, "V0 = EPS × P/E")
+
+        Prompt.ask("\n按 Enter 繼續 / Press Enter to continue")
+
+    def calculate_peg(self):
+        """Calculate PEG Ratio interactively."""
+        from cfa_calculator.formulas.equity_formulas import calculate_peg_ratio
+        from cfa_calculator.utils.formatters import format_result
+
+        console.print("\n[bold green]計算 PEG 比率 / Calculate PEG Ratio[/bold green]\n")
+
+        pe_ratio = FloatPrompt.ask("P/E 比率 / P/E Ratio")
+        growth_rate = FloatPrompt.ask("增長率 / Growth Rate (例如 0.15 代表 15%)")
+
+        result = calculate_peg_ratio(pe_ratio, growth_rate)
+
+        inputs = {
+            "P/E 比率 / P/E Ratio": f"{pe_ratio:.2f}",
+            "增長率 / Growth Rate": f"{growth_rate * 100:.2f}%",
+        }
+
+        results = {"PEG 比率 / PEG Ratio": f"{result:.4f}"}
+
+        notes = "PEG < 1: 可能被低估 / Potentially undervalued\nPEG > 1: 可能被高估 / Potentially overvalued"
+
+        format_result("PEG 比率 / PEG Ratio", inputs, results, "PEG = P/E / (g × 100)", notes)
+
+        Prompt.ask("\n按 Enter 繼續 / Press Enter to continue")
+
+    def option_menu(self):
+        """Derivatives submenu."""
+        console.print("\n[bold cyan]═══ 衍生品計算 / Derivatives ═══[/bold cyan]\n")
+
+        table = Table(show_header=True, header_style="bold magenta", box=box.ROUNDED)
+        table.add_column("選項 / Option", style="cyan", width=12)
+        table.add_column("計算 / Calculation", style="green")
+
+        table.add_row("1", "期權收益 / Option Payoff")
+        table.add_row("2", "布萊克-斯科爾斯 / Black-Scholes")
+        table.add_row("b", "返回 / Back")
+
+        console.print(table)
+
+        choice = Prompt.ask(
+            "\n[bold cyan]選擇計算 / Select Calculation[/bold cyan]",
+            choices=["1", "2", "b"],
+            default="b"
+        )
+
+        if choice == "1":
+            self.calculate_option_payoff()
+        elif choice == "2":
+            self.calculate_black_scholes()
+
+    def calculate_option_payoff(self):
+        """Calculate Option Payoff interactively."""
+        from cfa_calculator.formulas.option_formulas import calculate_option_payoff
+        from cfa_calculator.utils.formatters import format_result
+
+        console.print("\n[bold green]計算期權收益 / Calculate Option Payoff[/bold green]\n")
+
+        option_type = Prompt.ask("期權類型 / Option Type", choices=["call", "put"])
+        spot_price = FloatPrompt.ask("到期股價 / Spot Price at Expiration")
+        strike_price = FloatPrompt.ask("行權價 / Strike Price")
+        premium = FloatPrompt.ask("期權費 / Premium Paid (可選 / optional)", default=0.0)
+
+        result = calculate_option_payoff(option_type, spot_price, strike_price, premium)
+
+        inputs = {
+            "期權類型 / Option Type": option_type.capitalize(),
+            "到期股價 / Spot Price": f"${spot_price:.2f}",
+            "行權價 / Strike Price": f"${strike_price:.2f}",
+            "期權費 / Premium": f"${premium:.2f}" if premium > 0 else "N/A",
+        }
+
+        if premium > 0:
+            results = {"利潤/損失 / Profit/Loss": f"${result:.2f}"}
+        else:
+            results = {"收益 / Payoff": f"${result:.2f}"}
+
+        format_result("期權收益 / Option Payoff", inputs, results)
+
+        Prompt.ask("\n按 Enter 繼續 / Press Enter to continue")
+
+    def calculate_black_scholes(self):
+        """Calculate Black-Scholes interactively."""
+        from cfa_calculator.formulas.option_formulas import calculate_black_scholes
+        from cfa_calculator.utils.formatters import format_result
+
+        console.print("\n[bold green]計算布萊克-斯科爾斯期權價格 / Calculate Black-Scholes Option Price[/bold green]\n")
+
+        option_type = Prompt.ask("期權類型 / Option Type", choices=["call", "put"])
+        spot_price = FloatPrompt.ask("當前股價 / Current Spot Price")
+        strike_price = FloatPrompt.ask("行權價 / Strike Price")
+        time_to_expiry = FloatPrompt.ask("到期時間（年）/ Time to Expiry (years)")
+        risk_free_rate = FloatPrompt.ask("無風險利率 / Risk-Free Rate (例如 0.05 代表 5%)")
+        volatility = FloatPrompt.ask("波動率 / Volatility (例如 0.20 代表 20%)")
+
+        result = calculate_black_scholes(
+            option_type,
+            spot_price,
+            strike_price,
+            time_to_expiry,
+            risk_free_rate,
+            volatility
+        )
+
+        inputs = {
+            "期權類型 / Option Type": option_type.capitalize(),
+            "當前股價 / Spot Price": f"${spot_price:.2f}",
+            "行權價 / Strike Price": f"${strike_price:.2f}",
+            "到期時間 / Time to Expiry": f"{time_to_expiry:.4f} years",
+            "無風險利率 / Risk-Free Rate": f"{risk_free_rate * 100:.2f}%",
+            "波動率 / Volatility": f"{volatility * 100:.2f}%",
+        }
+
+        results = {
+            "期權價格 / Option Price": f"${result['option_price']:.4f}",
+            "Delta (Δ)": f"{result['delta']:.4f}",
+            "Gamma (Γ)": f"{result['gamma']:.6f}",
+            "Vega (ν)": f"{result['vega']:.4f}",
+            "Theta (Θ)": f"{result['theta']:.4f}",
+            "Rho (ρ)": f"{result['rho']:.4f}",
+        }
+
+        format_result("布萊克-斯科爾斯 / Black-Scholes", inputs, results)
+
         Prompt.ask("\n按 Enter 繼續 / Press Enter to continue")
 
     def show_help(self):
