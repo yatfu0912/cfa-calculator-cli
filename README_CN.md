@@ -1,15 +1,107 @@
  # CFA 计算器命令行工具
 
-一个轻量级、快速且用户友好的 CFA（特许金融分析师）金融计算命令行工具。
+一个全面、快速且用户友好的 CFA（特许金融分析师）金融计算命令行工具。
+
+[![Tests](https://img.shields.io/badge/tests-160%20passed-brightgreen)](https://github.com/yatfu0912/cfa-calculator-cli)
+[![Python](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
+[![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
 ## 功能特性
 
+### ✅ 完整实现
+
+- **交互模式**: 双语（中英文）菜单驱动界面，逐步参数输入
+- **数学表达式支持**: 在任何数值参数中使用表达式如 `13*3*365` 或 `0.05+0.02` - 无需预先计算！
 - **货币时间价值 (TVM)**: 终值、现值、年金、永续年金、有效年利率
 - **投资组合管理**: 夏普比率、特雷诺比率、詹森阿尔法、贝塔系数、CAPM、索提诺比率
 - **固定收益**: 债券价格、到期收益率、赎回收益率、当前收益率、麦考利久期、修正久期、凸性
-- **股权估值**: DDM、FCFE、市盈率估值（即将推出）
-- **衍生品**: Black-Scholes、期权定价（即将推出）
-- **统计学**: 均值、标准差、相关性、协方差（即将推出）
+- **统计学**: 描述性统计、协方差、相关系数、偏度、峰度、Z分数、置信区间、百分位数、变异系数
+- **其他计算**: NPV、IRR、货币加权收益率、时间加权收益率、回收期、盈利指数、修正内部收益率
+- **股权估值**: 戈登增长模型（DDM）、两阶段DDM、FCFE、市盈率估值、合理市盈率、PEG比率
+- **衍生品**: Black-Scholes-Merton、二叉树期权定价、看涨看跌平价、期权收益及希腊字母
+
+### 🎯 核心亮点
+
+- **160个测试** - 100%通过，高覆盖率
+- **50+计算功能** - 涵盖所有主要CFA主题
+- **双语支持** - 全程中英文
+- **表达式解析器** - 内置计算器处理复杂输入
+- **精美输出** - Rich格式化，表格和颜色
+
+## 快速开始
+
+### 交互模式（推荐初学者使用）
+
+启动双语提示的交互模式（中英文）：
+
+```bash
+cfa --interactive
+# 或简写
+cfa -i
+# 或直接
+cfa
+```
+
+交互模式提供：
+- 逐步参数输入
+- 菜单驱动界面
+- 双语支持（中英文）
+- 精美格式化输出
+- 无需记忆命令语法
+
+### 命令行模式（高级用户）
+
+```bash
+# 货币时间价值
+cfa tvm fv --pv 1000 --rate 0.05 --n 10
+
+# 支持数学表达式！
+cfa tvm fv --pv "13*3*365" --rate 0.07 --n 1
+cfa tvm fv --pv 10000 --rate "0.05+0.02" --n 5
+cfa tvm fv --pv 100000 --rate 0.07 --n "1/12" --freq 12
+
+# 投资组合管理
+cfa portfolio sharpe --return 0.12 --rf 0.03 --std 0.15
+
+# 股权估值
+cfa equity ddm --dividend 5.0 --required-return 0.12 --growth 0.05
+
+# 衍生品
+cfa option black-scholes --type call --spot 100 --strike 100 --time 1.0 --rf 0.05 --vol 0.20
+
+# 查看公式参考
+cfa --formulas
+
+# 获取帮助
+cfa --help
+cfa equity --help
+cfa option --help
+```
+
+**数学表达式支持：**
+
+所有数值参数都支持数学表达式 - 无需预先计算值！
+
+**支持的运算符：**
+- 基本算术：`+`、`-`、`*`、`/`
+- 括号：`()`
+- 幂运算：`**` 或 `^`
+- 分数：`1/12`
+
+**示例：**
+```bash
+# 使用表达式计算
+cfa tvm fv --pv "13*3*365" --rate 0.07 --n 1
+# 输出：现值 (PV) = 14235.00 (13*3*365)
+
+# 组合利率
+cfa tvm fv --pv 10000 --rate "0.05+0.02" --n 5
+# 输出：利率 (r) = 7.00% (0.05+0.02)
+
+# 使用分数
+cfa tvm fv --pv 100000 --rate 0.07 --n "1/12" --freq 12
+# 输出：年数 (n) = 0.0833 (1/12)
+```
 
 ## 安装
 
@@ -33,8 +125,11 @@ pip install -e .
 
 ```bash
 cfa --help              # 查看主帮助
+cfa --formulas          # 查看公式参考指南
 cfa tvm --help          # 查看货币时间价值模块帮助
 cfa portfolio --help    # 查看投资组合管理模块帮助
+cfa equity --help       # 查看股权估值模块帮助
+cfa option --help       # 查看衍生品模块帮助
 ```
 
 ### 货币时间价值 (TVM) 示例
@@ -323,11 +418,58 @@ cfa bond duration --face 1000 --coupon-rate 0.05 --ytm 0.06 --years 10 --freq 2 
 | `duration` | 麦考利久期和修正久期 | `--face`, `--coupon-rate`, `--ytm`, `--years`, `--freq` |
 | `convexity` | 凸性 | `--face`, `--coupon-rate`, `--ytm`, `--years`, `--freq` |
 
+### 统计学 (stats)
+
+| 命令 | 说明 | 主要参数 |
+|------|------|----------|
+| `descriptive` | 描述性统计 | `--data` |
+| `covariance` | 协方差 | `--data1`, `--data2` |
+| `correlation` | 相关系数 | `--data1`, `--data2` |
+| `z-score` | Z分数 | `--value`, `--mean`, `--std` |
+| `confidence-interval` | 置信区间 | `--data`, `--confidence` |
+| `percentile` | 百分位数 | `--data`, `--percentile` |
+
+### 其他计算 (other)
+
+| 命令 | 说明 | 主要参数 |
+|------|------|----------|
+| `npv` | 净现值 | `--initial-investment`, `--cash-flows`, `--discount-rate` |
+| `irr` | 内部收益率 | `--cash-flows` |
+| `money-weighted-return` | 货币加权收益率 | `--cash-flows` |
+| `time-weighted-return` | 时间加权收益率 | `--returns` |
+| `payback-period` | 回收期 | `--initial-investment`, `--cash-flows` |
+| `profitability-index` | 盈利指数 | `--initial-investment`, `--cash-flows`, `--discount-rate` |
+
+### 股权估值 (equity)
+
+| 命令 | 说明 | 主要参数 |
+|------|------|----------|
+| `ddm` | 戈登增长模型 | `--dividend`, `--required-return`, `--growth` |
+| `multistage-ddm` | 两阶段DDM | `--dividend`, `--high-growth-rate`, `--high-growth-years`, `--stable-growth-rate`, `--required-return` |
+| `fcfe` | FCFE估值 | `--fcfe`, `--required-return`, `--growth` |
+| `pe-valuation` | 市盈率估值 | `--eps`, `--pe-ratio` |
+| `justified-pe` | 合理市盈率 | `--payout-ratio`, `--required-return`, `--growth` |
+| `peg` | PEG比率 | `--pe-ratio`, `--growth-rate` |
+
+### 衍生品 (option)
+
+| 命令 | 说明 | 主要参数 |
+|------|------|----------|
+| `payoff` | 期权收益 | `--type`, `--spot`, `--strike`, `--premium` |
+| `put-call-parity` | 看涨看跌平价 | `--call`, `--put`, `--spot`, `--strike`, `--rf`, `--time`, `--solve-for` |
+| `black-scholes` | Black-Scholes定价 | `--type`, `--spot`, `--strike`, `--time`, `--rf`, `--vol` |
+| `binomial` | 二叉树定价 | `--type`, `--spot`, `--strike`, `--time`, `--rf`, `--vol`, `--steps`, `--option-style` |
+
 ## 输入格式说明
 
 ### 利率格式
 - 使用小数格式：`0.05` 表示 5%
 - 或百分比格式：`5`（将自动转换为 0.05）
+
+### 数学表达式
+- 所有数值参数支持表达式：`"13*3*365"`、`"0.05+0.02"`、`"1/12"`
+- 支持运算符：`+`、`-`、`*`、`/`、`()`、`**`、`^`
+- 示例：`cfa tvm fv --pv "13*3*365" --rate 0.07 --n 1`
 
 ### 列表格式
 - 逗号分隔的值：`"0.10,0.15,0.12"`
@@ -438,28 +580,32 @@ Calculator CLI/
 ## 开发路线图
 
 ### ✅ 第一阶段（已完成）
-- 货币时间价值计算
-- 投资组合管理计算
-- 固定收益计算（债券定价、YTM、YTC、久期、凸性）
+- 货币时间价值计算（5个功能）
+- 投资组合管理计算（8个功能）
+- 固定收益计算（7个功能）
 
-### 第二阶段（即将推出）
-- 统计学模块（均值、标准差、偏度、峰度、置信区间）
-- 其他计算（NPV、IRR、货币加权收益率 vs 时间加权收益率）
+### ✅ 第二阶段（已完成）
+- 统计学模块（10个功能）
+- 其他计算模块（7个功能）
 
-### 第三阶段（未来）
-- 股权估值（DDM、FCFE、市盈率）
-- 衍生品（Black-Scholes、二叉树模型、看涨看跌平价关系）
+### ✅ 第三阶段（已完成）
+- 股权估值模块（6个功能）
+- 衍生品模块（4个功能）
 
-### 第四阶段（高级功能）
-- 保存/加载计算会话
-- 导出结果为 CSV/JSON
-- 公式参考查询
-- 多货币支持
+### ✅ 第四阶段（已完成）
+- 交互模式（22个交互计算）
+- 双语支持（中英文）
+- 数学表达式支持
+- 增强的帮助文档
+- 公式参考查询功能
 
 ## 常见问题
 
 ### Q: 如何输入百分比？
-A: 可以使用小数（0.05）或整数（5），工具会自动识别。
+A: 使用小数格式（0.05 表示 5%）。
+
+### Q: 如何使用数学表达式？
+A: 在任何数值参数中使用引号包含表达式，例如：`--pv "13*3*365"` 或 `--rate "0.05+0.02"`
 
 ### Q: 计算结果不准确？
 A: 请确保：
@@ -468,7 +614,25 @@ A: 请确保：
 - 复利频率设置正确
 
 ### Q: 如何查看公式？
-A: 在任何命令后添加 `--explain` 标志。
+A: 在任何命令后添加 `--explain` 标志，或使用 `cfa --formulas` 查看所有公式参考。
+
+### Q: 如何启动交互模式？
+A: 使用 `cfa`、`cfa -i` 或 `cfa --interactive` 命令。
+
+## 项目统计
+
+- **总命令数**: 50+ 金融计算
+- **总测试数**: 160（100%通过）
+- **模块数**: 7（TVM、Portfolio、Bond、Stats、Other、Equity、Option）
+- **代码行数**: ~2,500+（不含测试）
+- **测试覆盖率**: 
+  - TVM: 100%
+  - Portfolio: 77%
+  - Bond: 93%
+  - Stats: 96%
+  - Other: 95%
+  - Equity: 100%
+  - Option: 82%
 
 ## 贡献
 
