@@ -7,9 +7,10 @@ A lightweight, fast, and user-friendly command-line tool for CFA (Chartered Fina
 - **Time Value of Money (TVM)**: Future Value, Present Value, Annuities, Perpetuities, EAR
 - **Portfolio Management**: Sharpe Ratio, Treynor Ratio, Jensen's Alpha, Beta, CAPM, Sortino Ratio
 - **Fixed Income**: Bond Price, YTM, YTC, Current Yield, Macaulay Duration, Modified Duration, Convexity
+- **Statistics**: Descriptive Statistics, Covariance, Correlation, Skewness, Kurtosis, Z-Score, Confidence Intervals, Percentiles, Coefficient of Variation
+- **Other Calculations**: NPV, IRR, Money-Weighted Return, Time-Weighted Return, Payback Period, Profitability Index, MIRR
 - **Equity Valuation**: DDM, FCFE, P/E valuation (coming soon)
 - **Derivatives**: Black-Scholes, Option pricing (coming soon)
-- **Statistics**: Mean, Standard Deviation, Correlation, Covariance (coming soon)
 
 ## Installation
 
@@ -147,6 +148,89 @@ cfa bond convexity --face 1000 --coupon-rate 0.06 --ytm 0.06 --years 10 --freq 2
 # Calculate convexity to measure price-yield curvature
 ```
 
+### Statistics Examples
+
+**Descriptive Statistics:**
+```bash
+cfa stats descriptive --data "10,15,12,18,20,14,16"
+# Calculate mean, median, mode, std dev, variance, range
+# Result: Mean=15.0, Median=15.0, Std Dev=3.42
+```
+
+**Covariance & Correlation:**
+```bash
+cfa stats covariance --data1 "10,12,14,16" --data2 "8,10,12,14"
+# Calculate covariance and correlation between two datasets
+```
+
+**Skewness:**
+```bash
+cfa stats skewness --data "1,2,3,4,5,6,7,8,9,10"
+# Measure asymmetry of distribution
+```
+
+**Z-Score:**
+```bash
+cfa stats zscore --value 110 --mean 100 --std 10
+# Calculate standardized score
+# Result: z = 1.0
+```
+
+**Confidence Interval:**
+```bash
+cfa stats confidence-interval --data "10,12,14,16,18,20" --confidence 0.95
+# Calculate 95% confidence interval for the mean
+```
+
+### Other Calculations Examples
+
+**Net Present Value (NPV):**
+```bash
+cfa other npv --rate 0.10 --cash-flows "-1000,300,400,500,600"
+# Calculate NPV with 10% discount rate
+# Result: $388.77 (Accept project)
+```
+
+**Internal Rate of Return (IRR):**
+```bash
+cfa other irr --cash-flows "-1000,400,400,400"
+# Calculate IRR
+# Result: 9.70%
+```
+
+**Money-Weighted Return:**
+```bash
+cfa other money-weighted --beginning 1000 --ending 1200
+# Calculate money-weighted return (similar to IRR)
+```
+
+**Time-Weighted Return:**
+```bash
+cfa other time-weighted --beginning "1000,1100" --ending "1100,1210"
+# Calculate time-weighted return (eliminates cash flow timing effects)
+# Result: 21.00%
+```
+
+**Payback Period:**
+```bash
+cfa other payback --investment 1000 --cash-flows "400,400,400"
+# Calculate payback period
+# Result: 2.50 years
+```
+
+**Profitability Index:**
+```bash
+cfa other profitability-index --rate 0.10 --investment 1000 --cash-flows "500,500,500"
+# Calculate PI (PV of future CFs / Initial Investment)
+# Result: PI > 1 means accept project
+```
+
+**Modified IRR (MIRR):**
+```bash
+cfa other mirr --cash-flows "-1000,300,400,500,600" --finance-rate 0.10 --reinvest-rate 0.12
+# Calculate MIRR with different financing and reinvestment rates
+```
+
 **Yield to Call (YTC):**
 ```bash
 cfa bond ytc --price 1050 --face 1000 --coupon-rate 0.08 --years-to-call 5 --call-price 1030 --freq 2
@@ -208,6 +292,31 @@ cfa bond duration --face 1000 --coupon-rate 0.05 --ytm 0.06 --years 10 --freq 2 
 | `duration` | Macaulay & Modified Duration | `--face`, `--coupon-rate`, `--ytm`, `--years`, `--freq` |
 | `convexity` | Convexity | `--face`, `--coupon-rate`, `--ytm`, `--years`, `--freq` |
 
+### Statistics (stats)
+
+| Command | Description | Key Options |
+|---------|-------------|-------------|
+| `descriptive` | Descriptive Statistics | `--data`, `--sample` |
+| `covariance` | Covariance & Correlation | `--data1`, `--data2` |
+| `skewness` | Skewness | `--data` |
+| `kurtosis` | Kurtosis | `--data`, `--excess` |
+| `zscore` | Z-Score | `--value`, `--mean`, `--std` |
+| `confidence-interval` | Confidence Interval | `--data`, `--confidence` |
+| `percentile` | Percentile | `--data`, `--percentile` |
+| `cv` | Coefficient of Variation | `--data` |
+
+### Other Calculations (other)
+
+| Command | Description | Key Options |
+|---------|-------------|-------------|
+| `npv` | Net Present Value | `--rate`, `--cash-flows` |
+| `irr` | Internal Rate of Return | `--cash-flows`, `--guess` |
+| `money-weighted` | Money-Weighted Return | `--beginning`, `--ending`, `--cash-flows`, `--times` |
+| `time-weighted` | Time-Weighted Return | `--beginning`, `--ending` |
+| `payback` | Payback Period | `--investment`, `--cash-flows` |
+| `profitability-index` | Profitability Index | `--rate`, `--investment`, `--cash-flows` |
+| `mirr` | Modified IRR | `--cash-flows`, `--finance-rate`, `--reinvest-rate` |
+
 ## Input Formats
 
 ### Rates
@@ -261,23 +370,24 @@ Calculator CLI/
 ## Roadmap
 
 ### ✅ Phase 1 (Completed)
-- Time Value of Money calculations
-- Portfolio Management calculations
+- Time Value of Money calculations (FV, PV, Annuities, Perpetuities, EAR)
+- Portfolio Management calculations (Sharpe, Treynor, Jensen's Alpha, Beta, CAPM, Sortino)
 - Fixed Income calculations (Bond pricing, YTM, YTC, Duration, Convexity)
 
-### Phase 2 (Coming Soon)
-- Statistics module (Mean, Std Dev, Skewness, Kurtosis, Confidence Intervals)
-- Other calculations (NPV, IRR, Money-weighted vs Time-weighted Return)
+### ✅ Phase 2 (Completed)
+- Statistics module (Descriptive stats, Covariance, Correlation, Skewness, Kurtosis, Z-Score, Confidence Intervals, Percentiles, CV)
+- Other calculations (NPV, IRR, Money-weighted Return, Time-weighted Return, Payback Period, Profitability Index, MIRR)
 
-### Phase 3 (Future)
-- Equity Valuation (DDM, FCFE, P/E)
-- Derivatives (Black-Scholes, Binomial model, Put-Call Parity)
+### Phase 3 (Coming Soon)
+- Equity Valuation (DDM, Multi-stage DDM, FCFE, P/E Ratio valuation)
+- Derivatives (Black-Scholes, Binomial model, Put-Call Parity, Option Payoffs)
 
 ### Phase 4 (Advanced Features)
 - Save/load calculation sessions
 - Export results to CSV/JSON
 - Formula reference lookup
 - Multi-currency support
+- Interactive mode with guided prompts
 
 ## Contributing
 
