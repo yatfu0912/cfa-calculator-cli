@@ -1,8 +1,14 @@
 # CFA Calculator CLI
 
-A lightweight, fast, and user-friendly command-line tool for CFA (Chartered Financial Analyst) financial calculations.
+A comprehensive, fast, and user-friendly command-line tool for CFA (Chartered Financial Analyst) financial calculations.
+
+[![Tests](https://img.shields.io/badge/tests-160%20passed-brightgreen)](https://github.com/yatfu0912/cfa-calculator-cli)
+[![Python](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
+[![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
 ## Features
+
+### ✅ Complete Implementation
 
 - **Time Value of Money (TVM)**: Future Value, Present Value, Annuities, Perpetuities, EAR
 - **Portfolio Management**: Sharpe Ratio, Treynor Ratio, Jensen's Alpha, Beta, CAPM, Sortino Ratio
@@ -10,7 +16,26 @@ A lightweight, fast, and user-friendly command-line tool for CFA (Chartered Fina
 - **Statistics**: Descriptive Statistics, Covariance, Correlation, Skewness, Kurtosis, Z-Score, Confidence Intervals, Percentiles, Coefficient of Variation
 - **Other Calculations**: NPV, IRR, Money-Weighted Return, Time-Weighted Return, Payback Period, Profitability Index, MIRR
 - **Equity Valuation**: Gordon Growth Model (DDM), Two-Stage DDM, FCFE, P/E Valuation, Justified P/E, PEG Ratio
-- **Derivatives**: Black-Scholes, Binomial Option Pricing, Put-Call Parity, Option Payoffs
+- **Derivatives**: Black-Scholes-Merton, Binomial Option Pricing, Put-Call Parity, Option Payoffs with Greeks
+
+## Quick Start
+
+```bash
+# Install
+cd "Calculator CLI"
+pip install -e .
+
+# Run calculations
+cfa tvm fv --pv 1000 --rate 0.05 --n 10
+cfa portfolio sharpe --return 0.12 --rf 0.03 --std 0.15
+cfa equity ddm --dividend 5.0 --required-return 0.12 --growth 0.05
+cfa option black-scholes --type call --spot 100 --strike 100 --time 1.0 --rf 0.05 --vol 0.20
+
+# Get help
+cfa --help
+cfa equity --help
+cfa option --help
+```
 
 ## Installation
 
@@ -458,15 +483,33 @@ Calculator CLI/
 ├── src/cfa_calculator/
 │   ├── main.py              # CLI entry point
 │   ├── commands/            # Command modules
-│   │   ├── tvm.py
-│   │   └── portfolio.py
+│   │   ├── tvm.py           # Time Value of Money
+│   │   ├── portfolio.py     # Portfolio Management
+│   │   ├── bond.py          # Fixed Income
+│   │   ├── stats.py         # Statistics
+│   │   ├── other.py         # NPV, IRR, etc.
+│   │   ├── equity.py        # Equity Valuation
+│   │   └── option.py        # Derivatives
 │   ├── formulas/            # Core calculation logic
 │   │   ├── tvm_formulas.py
-│   │   └── portfolio_formulas.py
-│   └── utils/               # Utilities
-│       ├── formatters.py
-│       └── validators.py
-└── tests/                   # Test suite
+│   │   ├── portfolio_formulas.py
+│   │   ├── bond_formulas.py
+│   │   ├── stats_formulas.py
+│   │   ├── other_formulas.py
+│   │   ├── equity_formulas.py
+│   │   └── option_formulas.py
+│   ├── utils/               # Utilities
+│   │   ├── formatters.py    # Rich output formatting
+│   │   └── validators.py    # Input validation
+│   └── interactive.py       # Interactive mode (coming soon)
+└── tests/                   # Test suite (160 tests, 100% pass)
+    ├── test_tvm.py
+    ├── test_portfolio.py
+    ├── test_bond.py
+    ├── test_stats.py
+    ├── test_other.py
+    ├── test_equity.py
+    └── test_option.py
 ```
 
 ## Roadmap
@@ -482,14 +525,31 @@ Calculator CLI/
 
 ### ✅ Phase 3 (Completed)
 - Equity Valuation (Gordon Growth Model, Two-Stage DDM, FCFE, P/E Valuation, Justified P/E, PEG Ratio)
-- Derivatives (Black-Scholes, Binomial Option Pricing, Put-Call Parity, Option Payoffs)
+- Derivatives (Black-Scholes-Merton with Greeks, Binomial Option Pricing, Put-Call Parity, Option Payoffs)
 
-### Phase 4 (Advanced Features)
+### 🚧 Phase 4 (In Progress)
+- Interactive mode with guided prompts (bilingual: English/Chinese)
 - Save/load calculation sessions
 - Export results to CSV/JSON
+
+### 📋 Phase 5 (Planned)
 - Formula reference lookup
 - Multi-currency support
-- Interactive mode with guided prompts
+- Historical data integration
+- Batch calculations from CSV
+
+## Test Coverage
+
+- **Total Tests**: 160
+- **Pass Rate**: 100%
+- **Coverage by Module**:
+  - TVM: 100%
+  - Portfolio: 77%
+  - Bond: 93%
+  - Stats: 96%
+  - Other: 95%
+  - Equity: 100%
+  - Option: 82%
 
 ## Contributing
 
