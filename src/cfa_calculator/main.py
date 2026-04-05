@@ -5,7 +5,42 @@ from typing import Optional
 
 app = typer.Typer(
     name="cfa",
-    help="CFA Calculator - Command-line tool for financial calculations",
+    help="""CFA Calculator - Comprehensive financial calculations tool
+
+    \b
+    Features:
+    • 50+ financial calculations across 7 modules
+    • Interactive mode with bilingual support (English/Chinese)
+    • Command-line mode for advanced users
+    • All formulas match CFA curriculum
+
+    \b
+    Quick Start:
+      cfa                    Launch interactive mode
+      cfa -i                 Launch interactive mode
+      cfa tvm fv --help      Get help for specific command
+      cfa --version          Show version
+
+    \b
+    Modules:
+      tvm        Time Value of Money (FV, PV, Annuity, Perpetuity, EAR)
+      portfolio  Portfolio Management (Sharpe, Treynor, Alpha, Beta, CAPM)
+      bond       Fixed Income (Bond Price, YTM, Duration, Convexity)
+      stats      Statistics (Descriptive, Z-Score, Correlation, etc.)
+      other      Other Calculations (NPV, IRR, Payback, etc.)
+      equity     Equity Valuation (DDM, P/E, PEG, FCFE)
+      option     Derivatives (Black-Scholes, Binomial, Put-Call Parity)
+
+    \b
+    Examples:
+      cfa tvm fv --pv 1000 --rate 0.05 --n 10
+      cfa tvm fv --pv 100000 --rate 0.07 --n 1/12 --freq 12
+      cfa equity ddm --dividend 5.0 --required-return 0.12 --growth 0.05
+      cfa option black-scholes --type call --spot 100 --strike 100 --time 1.0 --rf 0.05 --vol 0.20
+
+    \b
+    GitHub: https://github.com/yatfu0912/cfa-calculator-cli
+    """,
     no_args_is_help=True,
 )
 

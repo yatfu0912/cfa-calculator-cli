@@ -25,22 +25,35 @@ app = typer.Typer(help="Time Value of Money calculations")
 def fv(
     pv: float = typer.Option(..., "--pv", help="Present Value"),
     rate: float = typer.Option(..., "--rate", "-r", help="Annual interest rate (as decimal, e.g., 0.05 for 5%)"),
-    n: int = typer.Option(..., "--n", "-n", help="Number of years"),
+    n: str = typer.Option(..., "--n", "-n", help="Number of years (supports fractions like 1/12 for 1 month)"),
     freq: int = typer.Option(1, "--freq", "-f", help="Compounding frequency per year (1=annual, 2=semi-annual, 4=quarterly, 12=monthly)"),
     explain: bool = typer.Option(False, "--explain", help="Show formula explanation"),
 ):
-    """Calculate Future Value."""
+    """Calculate Future Value.
+
+    Examples:
+      cfa tvm fv --pv 1000 --rate 0.05 --n 10
+      cfa tvm fv --pv 100000 --rate 0.07 --n 1/12 --freq 12
+    """
     try:
         validate_positive(pv, "Present Value")
-        validate_periods(n, "Number of years")
+
+        # Parse n to support fractions
+        if '/' in n:
+            parts = n.split('/')
+            n_value = float(parts[0]) / float(parts[1])
+        else:
+            n_value = float(n)
+
+        validate_periods(n_value, "Number of years")
         validate_frequency(freq)
 
-        result = calculate_fv(pv, rate, n, freq)
+        result = calculate_fv(pv, rate, n_value, freq)
 
         inputs = {
             "Present Value (PV)": pv,
             "Interest Rate (r)": f"{rate * 100:.2f}%",
-            "Number of Years (n)": n,
+            "Number of Years (n)": n_value if '/' not in n else f"{n_value:.4f} ({n})",
             "Compounding Frequency": freq,
         }
 
@@ -59,22 +72,35 @@ def fv(
 def pv(
     fv: float = typer.Option(..., "--fv", help="Future Value"),
     rate: float = typer.Option(..., "--rate", "-r", help="Annual interest rate (as decimal)"),
-    n: int = typer.Option(..., "--n", "-n", help="Number of years"),
+    n: str = typer.Option(..., "--n", "-n", help="Number of years (supports fractions like 1/12 for 1 month)"),
     freq: int = typer.Option(1, "--freq", "-f", help="Compounding frequency per year"),
     explain: bool = typer.Option(False, "--explain", help="Show formula explanation"),
 ):
-    """Calculate Present Value."""
+    """Calculate Present Value.
+
+    Examples:
+      cfa tvm pv --fv 15000 --rate 0.06 --n 10
+      cfa tvm pv --fv 10000 --rate 0.05 --n 6/12 --freq 12
+    """
     try:
         validate_positive(fv, "Future Value")
-        validate_periods(n, "Number of years")
+
+        # Parse n to support fractions
+        if '/' in n:
+            parts = n.split('/')
+            n_value = float(parts[0]) / float(parts[1])
+        else:
+            n_value = float(n)
+
+        validate_periods(n_value, "Number of years")
         validate_frequency(freq)
 
-        result = calculate_pv(fv, rate, n, freq)
+        result = calculate_pv(fv, rate, n_value, freq)
 
         inputs = {
             "Future Value (FV)": fv,
             "Interest Rate (r)": f"{rate * 100:.2f}%",
-            "Number of Years (n)": n,
+            "Number of Years (n)": n_value if '/' not in n else f"{n_value:.4f} ({n})",
             "Compounding Frequency": freq,
         }
 
