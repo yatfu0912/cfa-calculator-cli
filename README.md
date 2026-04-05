@@ -9,8 +9,8 @@ A lightweight, fast, and user-friendly command-line tool for CFA (Chartered Fina
 - **Fixed Income**: Bond Price, YTM, YTC, Current Yield, Macaulay Duration, Modified Duration, Convexity
 - **Statistics**: Descriptive Statistics, Covariance, Correlation, Skewness, Kurtosis, Z-Score, Confidence Intervals, Percentiles, Coefficient of Variation
 - **Other Calculations**: NPV, IRR, Money-Weighted Return, Time-Weighted Return, Payback Period, Profitability Index, MIRR
-- **Equity Valuation**: DDM, FCFE, P/E valuation (coming soon)
-- **Derivatives**: Black-Scholes, Option pricing (coming soon)
+- **Equity Valuation**: Gordon Growth Model (DDM), Two-Stage DDM, FCFE, P/E Valuation, Justified P/E, PEG Ratio
+- **Derivatives**: Black-Scholes, Binomial Option Pricing, Put-Call Parity, Option Payoffs
 
 ## Installation
 
@@ -244,6 +244,88 @@ cfa bond current-yield --price 1050 --face 1000 --coupon-rate 0.06
 # Result: ~5.71%
 ```
 
+### Equity Valuation Examples
+
+**Gordon Growth Model (DDM):**
+```bash
+cfa equity ddm --dividend 5.0 --required-return 0.12 --growth 0.05
+# Calculate stock value using constant growth DDM
+# Result: $71.43
+```
+
+**Two-Stage DDM:**
+```bash
+cfa equity multistage-ddm --current-dividend 2.0 --high-growth 0.15 --high-years 5 --stable-growth 0.05 --required-return 0.12
+# Calculate stock value with high growth period followed by stable growth
+```
+
+**FCFE Valuation:**
+```bash
+cfa equity fcfe --fcfe 10.0 --required-return 0.12 --growth 0.05
+# Calculate equity value using Free Cash Flow to Equity
+# Result: $142.86
+```
+
+**P/E Valuation:**
+```bash
+cfa equity pe-valuation --eps 5.0 --pe 15.0
+# Calculate stock value using P/E ratio
+# Result: $75.00
+```
+
+**Justified P/E Ratio:**
+```bash
+cfa equity justified-pe --payout 0.40 --required-return 0.12 --growth 0.05
+# Calculate justified P/E ratio using Gordon Growth Model
+# Result: 6.00
+```
+
+**PEG Ratio:**
+```bash
+cfa equity peg --pe 20.0 --growth 0.15
+# Calculate PEG ratio (P/E to Growth)
+# Result: 1.33 (PEG < 1: undervalued, PEG > 1: overvalued)
+```
+
+### Derivatives Examples
+
+**Option Payoff:**
+```bash
+cfa option payoff --type call --spot 110 --strike 100 --premium 3.0
+# Calculate call option profit at expiration
+# Result: $7.00 profit
+
+cfa option payoff --type put --spot 90 --strike 100
+# Calculate put option payoff
+# Result: $10.00
+```
+
+**Put-Call Parity:**
+```bash
+cfa option put-call-parity --put 5.0 --spot 100 --strike 100 --rf 0.05 --time 1.0
+# Solve for call price using put-call parity
+# Result: Call = $9.88
+```
+
+**Black-Scholes Option Pricing:**
+```bash
+cfa option black-scholes --type call --spot 100 --strike 100 --time 1.0 --rf 0.05 --vol 0.20
+# Calculate call option price and Greeks
+# Result: Option Price ~$10.45, Delta ~0.64, Gamma, Vega, Theta, Rho
+
+cfa option black-scholes --type put --spot 100 --strike 100 --time 1.0 --rf 0.05 --vol 0.20 --div 0.02
+# Calculate put option price with dividend yield
+```
+
+**Binomial Option Pricing:**
+```bash
+cfa option binomial --type call --spot 100 --strike 100 --time 1.0 --rf 0.05 --vol 0.20 --steps 100
+# Calculate European call using binomial tree (100 steps)
+
+cfa option binomial --type put --spot 100 --strike 100 --time 1.0 --rf 0.05 --vol 0.20 --steps 100 --american
+# Calculate American put option (allows early exercise)
+```
+
 ### Using the --explain Flag
 
 Add `--explain` to any command to see the formula:
@@ -317,6 +399,26 @@ cfa bond duration --face 1000 --coupon-rate 0.05 --ytm 0.06 --years 10 --freq 2 
 | `profitability-index` | Profitability Index | `--rate`, `--investment`, `--cash-flows` |
 | `mirr` | Modified IRR | `--cash-flows`, `--finance-rate`, `--reinvest-rate` |
 
+### Equity Valuation (equity)
+
+| Command | Description | Key Options |
+|---------|-------------|-------------|
+| `ddm` | Gordon Growth Model | `--dividend`, `--required-return`, `--growth` |
+| `multistage-ddm` | Two-Stage DDM | `--current-dividend`, `--high-growth`, `--high-years`, `--stable-growth`, `--required-return` |
+| `fcfe` | FCFE Valuation | `--fcfe`, `--required-return`, `--growth` |
+| `pe-valuation` | P/E Valuation | `--eps`, `--pe` |
+| `justified-pe` | Justified P/E Ratio | `--payout`, `--required-return`, `--growth` |
+| `peg` | PEG Ratio | `--pe`, `--growth` |
+
+### Derivatives (option)
+
+| Command | Description | Key Options |
+|---------|-------------|-------------|
+| `payoff` | Option Payoff | `--type`, `--spot`, `--strike`, `--premium` (optional) |
+| `put-call-parity` | Put-Call Parity | Provide 5 of 6: `--call`, `--put`, `--spot`, `--strike`, `--rf`, `--time` |
+| `black-scholes` | Black-Scholes Pricing | `--type`, `--spot`, `--strike`, `--time`, `--rf`, `--vol`, `--div` (optional) |
+| `binomial` | Binomial Tree Pricing | `--type`, `--spot`, `--strike`, `--time`, `--rf`, `--vol`, `--steps`, `--american` (flag) |
+
 ## Input Formats
 
 ### Rates
@@ -378,9 +480,9 @@ Calculator CLI/
 - Statistics module (Descriptive stats, Covariance, Correlation, Skewness, Kurtosis, Z-Score, Confidence Intervals, Percentiles, CV)
 - Other calculations (NPV, IRR, Money-weighted Return, Time-weighted Return, Payback Period, Profitability Index, MIRR)
 
-### Phase 3 (Coming Soon)
-- Equity Valuation (DDM, Multi-stage DDM, FCFE, P/E Ratio valuation)
-- Derivatives (Black-Scholes, Binomial model, Put-Call Parity, Option Payoffs)
+### ✅ Phase 3 (Completed)
+- Equity Valuation (Gordon Growth Model, Two-Stage DDM, FCFE, P/E Valuation, Justified P/E, PEG Ratio)
+- Derivatives (Black-Scholes, Binomial Option Pricing, Put-Call Parity, Option Payoffs)
 
 ### Phase 4 (Advanced Features)
 - Save/load calculation sessions

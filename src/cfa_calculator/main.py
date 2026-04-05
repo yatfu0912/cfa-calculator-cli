@@ -28,13 +28,15 @@ def main(
 
 
 # Import and register command groups
-from cfa_calculator.commands import tvm, portfolio, bond, stats, other
+from cfa_calculator.commands import tvm, portfolio, bond, stats, other, equity, option
 
 app.add_typer(tvm.app, name="tvm", help="Time Value of Money calculations")
 app.add_typer(portfolio.app, name="portfolio", help="Portfolio Management calculations")
 app.add_typer(bond.app, name="bond", help="Fixed Income (Bond) calculations")
 app.add_typer(stats.app, name="stats", help="Statistical calculations")
 app.add_typer(other.app, name="other", help="Other calculations (NPV, IRR, etc.)")
+app.add_typer(equity.app, name="equity", help="Equity Valuation calculations")
+app.add_typer(option.app, name="option", help="Derivatives and Option pricing calculations")
 
 
 if __name__ == "__main__":
