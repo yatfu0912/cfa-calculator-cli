@@ -11,7 +11,7 @@ A comprehensive, fast, and user-friendly command-line tool for CFA (Chartered Fi
 ### ✅ Complete Implementation
 
 - **Interactive Mode**: Bilingual (English/Chinese) menu-driven interface with step-by-step parameter input
-- **Mathematical Expression Support**: Use expressions like `13*3*365` or `0.05+0.02` in any numeric parameter
+- **Mathematical Expression Support**: Use expressions like `13*3*365` or `0.05+0.02` in any numeric parameter - no need to pre-calculate!
 - **Time Value of Money (TVM)**: Future Value, Present Value, Annuities, Perpetuities, EAR
 - **Portfolio Management**: Sharpe Ratio, Treynor Ratio, Jensen's Alpha, Beta, CAPM, Sortino Ratio
 - **Fixed Income**: Bond Price, YTM, YTC, Current Yield, Macaulay Duration, Modified Duration, Convexity
@@ -19,6 +19,14 @@ A comprehensive, fast, and user-friendly command-line tool for CFA (Chartered Fi
 - **Other Calculations**: NPV, IRR, Money-Weighted Return, Time-Weighted Return, Payback Period, Profitability Index, MIRR
 - **Equity Valuation**: Gordon Growth Model (DDM), Two-Stage DDM, FCFE, P/E Valuation, Justified P/E, PEG Ratio
 - **Derivatives**: Black-Scholes-Merton, Binomial Option Pricing, Put-Call Parity, Option Payoffs with Greeks
+
+### 🎯 Key Highlights
+
+- **160 Tests** - 100% passing with high coverage
+- **50+ Calculations** - Covering all major CFA topics
+- **Bilingual Support** - English and Chinese throughout
+- **Expression Parser** - Built-in calculator for complex inputs
+- **Beautiful Output** - Rich formatting with tables and colors
 
 ## Quick Start
 
@@ -68,11 +76,41 @@ cfa option --help
 ```
 
 **Mathematical Expression Support:**
+
+All numeric parameters support mathematical expressions - no need to pre-calculate values!
+
+**Supported Operators:**
 - Basic arithmetic: `+`, `-`, `*`, `/`
 - Parentheses: `()`
 - Exponentiation: `**` or `^`
 - Fractions: `1/12`
-- Examples: `"13*3*365"`, `"0.05+0.02"`, `"100*(1+0.05)"`, `"2^3"`
+
+**Examples:**
+```bash
+# Calculate with expressions
+cfa tvm fv --pv "13*3*365" --rate 0.07 --n 1
+# Output: Present Value (PV) = 14235.00 (13*3*365)
+
+# Combine rates
+cfa tvm fv --pv 10000 --rate "0.05+0.02" --n 5
+# Output: Interest Rate (r) = 7.00% (0.05+0.02)
+
+# Use fractions
+cfa tvm fv --pv 100000 --rate 0.07 --n "1/12" --freq 12
+# Output: Number of Years (n) = 0.0833 (1/12)
+
+# Complex expressions
+cfa tvm pv --fv "1000*(1+0.05)^2" --rate 0.06 --n 10
+
+# Parentheses for order of operations
+cfa tvm fv --pv "(100+200)*3" --rate 0.05 --n 5
+```
+
+**Benefits:**
+- ✅ No need to use a calculator first
+- ✅ Transparent - shows both expression and result
+- ✅ Secure - only allows mathematical operations
+- ✅ Works with all numeric parameters
 
 ## Installation
 
@@ -486,6 +524,12 @@ cfa bond duration --face 1000 --coupon-rate 0.05 --ytm 0.06 --years 10 --freq 2 
 ### Rates
 - Use decimal format: `0.05` for 5%
 - Or percentage format: `5` (will be converted to 0.05)
+- Expressions supported: `"0.05+0.02"` for 7%
+
+### Numbers
+- Simple numbers: `1000`, `15000`
+- Expressions: `"13*3*365"`, `"1000*(1+0.05)"`
+- Fractions: `"1/12"` for 1 month, `"6/12"` for 6 months
 
 ### Lists
 - Comma-separated values: `"0.10,0.15,0.12"`
@@ -498,6 +542,41 @@ cfa bond duration --face 1000 --coupon-rate 0.05 --ytm 0.06 --years 10 --freq 2 
 - Monthly: `12`
 - Weekly: `52`
 - Daily: `365`
+
+### Expression Examples
+
+**Time Calculations:**
+```bash
+# 1 month
+--n "1/12"
+
+# 6 months  
+--n "6/12"
+
+# 18 months
+--n "18/12"
+```
+
+**Amount Calculations:**
+```bash
+# Daily savings for a year
+--pv "13*365"
+
+# Monthly payment times periods
+--pmt "1000*12"
+
+# Compound calculation
+--fv "1000*(1+0.05)^2"
+```
+
+**Rate Calculations:**
+```bash
+# Add risk premium
+--rate "0.05+0.02"
+
+# Average of two rates
+--rate "(0.05+0.07)/2"
+```
 
 ## Development
 
