@@ -648,14 +648,8 @@ Calculator CLI/
 - Complete menu system for all 7 modules
 - Step-by-step parameter input
 - Beautiful formatted output with Rich library
-
-### 📋 Phase 5 (Planned)
-- Save/load calculation sessions
-- Export results to CSV/JSON
-- Formula reference lookup
-- Multi-currency support
-- Historical data integration
-- Batch calculations from CSV
+- Mathematical expression support for all numeric parameters
+- Enhanced help documentation with examples and formula references
 
 ## Test Coverage
 
